@@ -1,44 +1,36 @@
----
-title: Home
-nav_order: 1
----
+# ReleaseNotes
 
-# S&N Infrastructure — Release Notes
+Internal release notes repository for S&N Infrastructure's Appenate form spaces.
 
-Welcome to the internal release notes site for all S&N Infrastructure Appenate form spaces. Use the navigation on the left to browse by form space and find version history for individual forms.
-
----
+Every time a form or form space is updated, a release note is added here documenting what changed, why it changed, and which forms were affected.
 
 ## Form Spaces
 
-| Form Space | Description |
-|---|---|
-| [Tillman](docs/tillman/) | Release notes for the Tillman form space |
-| [Glo](docs/glo/) | Release notes for the Glo form space |
-| [Ripple](docs/ripple/) | Release notes for the Ripple form space |
-| [CVEC](docs/cvec/) | Release notes for the CVEC form space |
-| [APB](docs/apb/) | Release notes for the APB form space |
-| [Dominion](docs/dominion/) | Release notes for the Dominion form space |
-| [Southern Company](docs/southern-company/) | Release notes for the Southern Company form space |
+- Tillman
+- Glo
+- Ripple
+- CVEC
+- APB
+- Dominion
+- Southern Company
 
----
+## How to Add a Release Note
 
-## How to Read a Release Note
+1. Create a new branch from `main` named after the version and form (e.g. `release/glo-splice-point-ver-1.36`)
+2. Navigate to the correct form space folder under `docs/`
+3. Create a subfolder for the form if it doesn't exist yet
+4. Add a new Markdown file: `ver-X-XX.md`
+5. Copy the front matter and template from an existing file
+6. Open a pull request into `main` — the site updates automatically once merged
 
-Each release note includes:
+## Viewing the Site
 
-- **Version** — the version number of the release
-- **Release Date** — when it was deployed
-- **Authored By** — who made and documented the change
-- **Bug Fixes** — any bugs that were resolved
-- **Summary of Changes** — a quick-reference table of what changed and why
+Once GitHub Pages is enabled, the live site will be available at:
+`https://<your-org>.github.io/ReleaseNotes`
 
----
+## Conventions
 
-## Adding a New Release Note
-
-See the [README](https://github.com/your-org/ReleaseNotes#how-to-add-a-release-note) on GitHub for step-by-step instructions.
-
----
-
-*S&N Infrastructure — Internal Use Only*
+- Version files are named `ver-X-XX.md` (e.g. `ver-1-35.md`)
+- Each file covers one form within one form space
+- `nav_order` in front matter controls the sort order — use `1` for the newest release
+- Commit messages should be descriptive (e.g. `Add Ver 1.35 release note — Glo / SPLICE POINT`)

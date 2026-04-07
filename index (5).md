@@ -1,13 +1,13 @@
 ---
-title: Southern Company
-nav_order: 8
+title: Dominion
+nav_order: 7
 has_children: true
-permalink: docs/southern-company/
+permalink: docs/dominion/
 ---
 
-# Southern Company
+# Dominion
 
-Release notes for all forms within the Southern Company form space.
+Release notes for all forms within the Dominion form space.
 
 ---
 

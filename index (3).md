@@ -1,13 +1,13 @@
 ---
-title: Southern Company
-nav_order: 8
+title: Ripple
+nav_order: 4
 has_children: true
-permalink: docs/southern-company/
+permalink: docs/ripple/
 ---
 
-# Southern Company
+# Ripple
 
-Release notes for all forms within the Southern Company form space.
+Release notes for all forms within the Ripple form space.
 
 ---
 
