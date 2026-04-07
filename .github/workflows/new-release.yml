@@ -1,0 +1,161 @@
+name: New Release Note
+
+on:
+  workflow_dispatch:
+    inputs:
+      form_space:
+        description: "Form Space"
+        required: true
+        type: choice
+        options:
+          - Tillman
+          - Glo
+          - Ripple
+          - CVEC
+          - APB
+          - Dominion
+          - Southern Company
+
+      form_name:
+        description: "Form Name (e.g. SPLICE POINT)"
+        required: true
+        type: string
+
+      version:
+        description: "Version Number (e.g. 1.36)"
+        required: true
+        type: string
+
+      release_date:
+        description: "Release Date (e.g. April 7, 2025)"
+        required: true
+        type: string
+
+      author:
+        description: "Authored By"
+        required: true
+        type: string
+
+      change_title:
+        description: "Title of the Change (e.g. Removed Page Swipe Navigation)"
+        required: true
+        type: string
+
+      change_category:
+        description: "Change Category"
+        required: true
+        type: choice
+        options:
+          - Bug Fix
+          - New Feature
+          - Improvement
+          - Data Integrity
+          - Workflow
+
+      change_description:
+        description: "Full description of what changed and why"
+        required: true
+        type: string
+
+jobs:
+  create-release-note:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up variables
+        id: vars
+        run: |
+          FORM_SPACE_INPUT="${{ github.event.inputs.form_space }}"
+          case "$FORM_SPACE_INPUT" in
+            "Tillman")          SPACE_FOLDER="tillman" ;;
+            "Glo")              SPACE_FOLDER="glo" ;;
+            "Ripple")           SPACE_FOLDER="ripple" ;;
+            "CVEC")             SPACE_FOLDER="cvec" ;;
+            "APB")              SPACE_FOLDER="apb" ;;
+            "Dominion")         SPACE_FOLDER="dominion" ;;
+            "Southern Company") SPACE_FOLDER="southern-company" ;;
+          esac
+          FORM_FOLDER=$(echo "${{ github.event.inputs.form_name }}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+          VERSION_FILE=$(echo "${{ github.event.inputs.version }}" | tr '.' '-')
+          VERSION_DISPLAY="Ver ${{ github.event.inputs.version }}"
+          echo "SPACE_FOLDER=$SPACE_FOLDER"       >> $GITHUB_OUTPUT
+          echo "FORM_FOLDER=$FORM_FOLDER"         >> $GITHUB_OUTPUT
+          echo "VERSION_FILE=$VERSION_FILE"       >> $GITHUB_OUTPUT
+          echo "VERSION_DISPLAY=$VERSION_DISPLAY" >> $GITHUB_OUTPUT
+
+      - name: Create folder structure
+        run: |
+          mkdir -p docs/${{ steps.vars.outputs.SPACE_FOLDER }}/${{ steps.vars.outputs.FORM_FOLDER }}
+
+      - name: Create form index if it does not exist
+        run: |
+          INDEX_PATH="docs/${{ steps.vars.outputs.SPACE_FOLDER }}/${{ steps.vars.outputs.FORM_FOLDER }}/index.md"
+          if [ ! -f "$INDEX_PATH" ]; then
+            cat > "$INDEX_PATH" << EOF
+          ---
+          title: ${{ github.event.inputs.form_name }}
+          parent: ${{ github.event.inputs.form_space }}
+          nav_order: 1
+          has_children: true
+          permalink: docs/${{ steps.vars.outputs.SPACE_FOLDER }}/${{ steps.vars.outputs.FORM_FOLDER }}/
+          ---
+
+          # ${{ github.event.inputs.form_name }}
+
+          Release notes for the ${{ github.event.inputs.form_name }} form in the ${{ github.event.inputs.form_space }} form space.
+
+          | Version | Date | Author | Summary |
+          |---|---|---|---|
+          | [${{ steps.vars.outputs.VERSION_DISPLAY }}](ver-${{ steps.vars.outputs.VERSION_FILE }}) | ${{ github.event.inputs.release_date }} | ${{ github.event.inputs.author }} | ${{ github.event.inputs.change_title }} |
+          EOF
+          else
+            NEW_ROW="| [${{ steps.vars.outputs.VERSION_DISPLAY }}](ver-${{ steps.vars.outputs.VERSION_FILE }}) | ${{ github.event.inputs.release_date }} | ${{ github.event.inputs.author }} | ${{ github.event.inputs.change_title }} |"
+            sed -i "/^|---|/a $NEW_ROW" "$INDEX_PATH"
+          fi
+
+      - name: Create release note file
+        run: |
+          NOTE_PATH="docs/${{ steps.vars.outputs.SPACE_FOLDER }}/${{ steps.vars.outputs.FORM_FOLDER }}/ver-${{ steps.vars.outputs.VERSION_FILE }}.md"
+          cat > "$NOTE_PATH" << EOF
+          ---
+          title: ${{ steps.vars.outputs.VERSION_DISPLAY }} — ${{ github.event.inputs.form_name }}
+          parent: ${{ github.event.inputs.form_name }}
+          nav_order: 1
+          ---
+
+          # ${{ steps.vars.outputs.VERSION_DISPLAY }} — ${{ github.event.inputs.form_name }}
+
+          **Form Space:** ${{ github.event.inputs.form_space }}
+          **Form:** ${{ github.event.inputs.form_name }}
+          **Release Date:** ${{ github.event.inputs.release_date }}
+          **Authored By:** ${{ github.event.inputs.author }}
+
+          ---
+
+          ## ${{ github.event.inputs.change_category }}
+
+          ### ${{ github.event.inputs.change_title }}
+
+          ${{ github.event.inputs.change_description }}
+
+          **Affected:** ${{ github.event.inputs.form_space }} — ${{ github.event.inputs.form_name }}
+
+          ---
+
+          ## Summary of Changes
+
+          | Category | Description |
+          |---|---|
+          | ${{ github.event.inputs.change_category }} | ${{ github.event.inputs.change_title }} |
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Add ${{ steps.vars.outputs.VERSION_DISPLAY }} release note — ${{ github.event.inputs.form_space }} / ${{ github.event.inputs.form_name }}"
+          git push
