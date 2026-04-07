@@ -10,10 +10,6 @@ Each release note is a Markdown file named after its version number (e.g. `RELEA
 
 ---
 
-
-
----
-
 ## How to Add a Release Note
 
 1. Create a new branch from `main` named after the version (e.g. `release/ver-1.36`)
