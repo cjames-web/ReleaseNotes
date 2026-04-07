@@ -17,7 +17,7 @@ search:
 nav_sort: order  # Sort nav items by nav_order value
 
 # Color scheme — use "dark" or leave blank for default light
-color_scheme: light
+color_scheme: dark
 
 # Footer
 footer_content: "S&amp;N Infrastructure — Internal Use Only"
